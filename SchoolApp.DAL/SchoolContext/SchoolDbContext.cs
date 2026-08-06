@@ -29,6 +29,7 @@ namespace SchoolApp.DAL.SchoolContext
         public DbSet<Staff> dbsStaff { get; set; }
         public DbSet<StaffExperience> dbsStaffExperience { get; set; }
         public DbSet<StaffSalary> dbsStaffSalary { get; set; }
+        public DbSet<SalaryPaymentDetail> dbsSalaryPaymentDetail { get; set; }
         public DbSet<Student> dbsStudent { get; set; }
         public DbSet<Subject> dbsSubject { get; set; }
         public DbSet<FeeType> dbsFeeType { get; set; }
@@ -159,18 +160,21 @@ namespace SchoolApp.DAL.SchoolContext
                     );
             });
 
-            modelBuilder.Entity<StaffSalary>(entity =>
-            {
-            // Computed Column: https://dev.to/karenpayneoregon/sql-server-computed-columns-with-ef-core-3h8d
+            // NetSalary used to be a SQL computed column, but it now also needs to account for the
+            // dynamic Additions/Deductions line items in SalaryPaymentDetail (a child table), which a
+            // single-table SQL computed column cannot reference. It is now a plain persisted column,
+            // calculated and set in code by SalaryPaymentsController before save.
+            modelBuilder.Entity<SalaryPaymentDetail>()
+                .HasOne<StaffSalary>()
+                .WithMany(s => s.Details)
+                .HasForeignKey(d => d.StaffSalaryId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-                entity.Property(e => e.NetSalary)
-                    .HasComputedColumnSql("([BasicSalary] + [FestivalBonus] + [Allowance] + [MedicalAllowance] + [HousingAllowance] + [TransportationAllowance] - [SavingFund] - [Taxes])");
-
-
-                //entity.Property(e => e.NetSalary)
-                //    .HasComputedColumnSql("([BasicSalary] + [FestivalBonus] + [Allowance] + [MedicalAllowance] + [HousingAllowance] + [TransportationAllowance] - [SavingFund] - [Taxes])", false);
-
-            });
+            modelBuilder.Entity<StaffSalary>()
+                .HasOne(s => s.Staff)
+                .WithMany()
+                .HasForeignKey(s => s.StaffId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<StudentMarksDetails>()
         .HasKey(c => new { c.StudentId, c.MarkEntryId });

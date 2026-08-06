@@ -46,8 +46,9 @@ namespace SchoolApp.Models.DataModels
         public string? BankName { get; set; }
         public string? BankBranch { get; set; }
         public string? Status { get; set; }
-        public int? DepartmentId { get; set; }      
+        public int? DepartmentId { get; set; }
         public  Department? Department { get; set; }
+        public decimal? BasicSalary { get; set; }
         public int? StaffSalaryId { get; set; }
         [ForeignKey("StaffSalaryId")]
         public StaffSalary? StaffSalary { get; set; }

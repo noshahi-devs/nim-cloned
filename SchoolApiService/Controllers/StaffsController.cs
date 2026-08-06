@@ -37,6 +37,7 @@ namespace SchoolApiService.Controllers
             public string? Status { get; set; }
             public int? DepartmentId { get; set; }
             public DepartmentDto? Department { get; set; }
+            public decimal? BasicSalary { get; set; }
         }
 
         public class DepartmentDto
@@ -102,11 +103,12 @@ namespace SchoolApiService.Controllers
                         Designation = s.Designation != null ? s.Designation.ToString() : null,
                         Status = s.Status,
                         DepartmentId = s.DepartmentId,
-                        Department = s.Department != null ? new DepartmentDto 
-                        { 
-                            DepartmentId = s.Department.DepartmentId, 
-                            DepartmentName = s.Department.DepartmentName 
-                        } : null
+                        Department = s.Department != null ? new DepartmentDto
+                        {
+                            DepartmentId = s.Department.DepartmentId,
+                            DepartmentName = s.Department.DepartmentName
+                        } : null,
+                        BasicSalary = s.BasicSalary
                     })
                     .ToListAsync();
 
@@ -149,6 +151,7 @@ namespace SchoolApiService.Controllers
                         s.BankName,
                         s.BankBranch,
                         s.Status,
+                        s.BasicSalary,
                         s.DepartmentId,
                         Department = s.Department != null ? new { s.Department.DepartmentId, s.Department.DepartmentName } : null,
                         s.StaffSalaryId,
@@ -218,6 +221,7 @@ namespace SchoolApiService.Controllers
                         s.BankName,
                         s.BankBranch,
                         s.Status,
+                        s.BasicSalary,
                         s.DepartmentId,
                         Department = s.Department != null ? new { s.Department.DepartmentId, s.Department.DepartmentName } : null,
                         s.StaffSalaryId,
