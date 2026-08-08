@@ -360,11 +360,12 @@ namespace SchoolApiService.Controllers
                     StaffId = s.StaffId,
                     StaffName = s.StaffName,
                     Designation = s.Designation,
+                    JoiningDate = s.JoiningDate,
                     Attendance = _context.dbsAttendance
                         .Where(a => a.Type == AttendanceType.Staff &&
                                     a.AttendanceIdentificationNumber == s.StaffId &&
                                     a.Date >= startDate && a.Date < nextDate)
-                        .Select(a => new { a.IsPresent, a.Description })
+                        .Select(a => new { a.IsPresent, a.Description, a.CheckInTime, a.CheckOutTime })
                         .FirstOrDefault()
                 })
                 .Select(x => new
@@ -372,13 +373,107 @@ namespace SchoolApiService.Controllers
                     x.StaffId,
                     x.StaffName,
                     Designation = x.Designation.ToString(),
+                    x.JoiningDate,
+                    IsBeforeJoining = x.JoiningDate != null && startDate < x.JoiningDate.Value.Date,
                     IsPresent = x.Attendance != null ? x.Attendance.IsPresent : false,
                     Status = x.Attendance != null ? (x.Attendance.IsPresent ? "Present" : "Absent") : "",
-                    Remarks = x.Attendance != null ? (x.Attendance.Description ?? "") : ""
+                    Remarks = x.Attendance != null ? (x.Attendance.Description ?? "") : "",
+                    CheckInTime = x.Attendance != null ? x.Attendance.CheckInTime : null,
+                    CheckOutTime = x.Attendance != null ? x.Attendance.CheckOutTime : null
                 })
                 .ToListAsync();
 
             return Ok(report);
+        }
+
+        // Upserts a batch of attendance records — used both for saving manual entry (Admin/Accountant
+        // bulk marking) and for persisting the rows previewed from FetchFromMachine. Unlike PostAttendance
+        // (which rejects a duplicate same-day mark to protect the self-service teacher flow), this updates
+        // an existing same-day record instead of rejecting it, since re-fetching/re-saving a corrected
+        // entry for the same day is the expected use case here.
+        [HttpPost("BulkMark")]
+        public async Task<IActionResult> BulkMark([FromBody] List<BulkAttendanceEntryVm> entries)
+        {
+            if (entries == null || entries.Count == 0)
+            {
+                return BadRequest("No entries provided.");
+            }
+
+            int created = 0, updated = 0;
+            var skipped = new List<object>();
+
+            // For staff entries, AttendanceIdentificationNumber is the StaffId (see GetDailyStaffReport
+            // above). Look up joining dates once so a day before someone joined can never be recorded as
+            // present or absent — that's not a real attendance fact, it's a data entry mistake.
+            var staffIds = entries.Where(e => e.Type == AttendanceType.Staff)
+                .Select(e => e.AttendanceIdentificationNumber).Distinct().ToList();
+            var joiningDates = await _context.dbsStaff
+                .Where(s => staffIds.Contains(s.StaffId))
+                .Select(s => new { s.StaffId, s.StaffName, s.JoiningDate })
+                .ToDictionaryAsync(s => s.StaffId);
+
+            foreach (var entry in entries)
+            {
+                var dateOnly = entry.Date.Date;
+
+                if (entry.Type == AttendanceType.Staff && dateOnly.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    skipped.Add(new
+                    {
+                        staffId = entry.AttendanceIdentificationNumber,
+                        date = dateOnly,
+                        reason = "Sunday - non-working day"
+                    });
+                    continue;
+                }
+
+                if (entry.Type == AttendanceType.Staff &&
+                    joiningDates.TryGetValue(entry.AttendanceIdentificationNumber, out var staffInfo) &&
+                    staffInfo.JoiningDate != null && dateOnly < staffInfo.JoiningDate.Value.Date)
+                {
+                    skipped.Add(new
+                    {
+                        staffId = entry.AttendanceIdentificationNumber,
+                        staffName = staffInfo.StaffName,
+                        date = dateOnly,
+                        joiningDate = staffInfo.JoiningDate.Value.Date,
+                        reason = "Before joining date"
+                    });
+                    continue;
+                }
+
+                var existing = await _context.dbsAttendance.FirstOrDefaultAsync(a =>
+                    a.Type == entry.Type &&
+                    a.AttendanceIdentificationNumber == entry.AttendanceIdentificationNumber &&
+                    a.Date.Date == dateOnly);
+
+                if (existing != null)
+                {
+                    existing.IsPresent = entry.IsPresent;
+                    existing.Description = entry.Description;
+                    existing.CheckInTime = entry.CheckInTime;
+                    existing.CheckOutTime = entry.CheckOutTime;
+                    updated++;
+                }
+                else
+                {
+                    _context.dbsAttendance.Add(new Attendance
+                    {
+                        Type = entry.Type,
+                        AttendanceIdentificationNumber = entry.AttendanceIdentificationNumber,
+                        Date = dateOnly,
+                        IsPresent = entry.IsPresent,
+                        Description = entry.Description,
+                        CheckInTime = entry.CheckInTime,
+                        CheckOutTime = entry.CheckOutTime
+                    });
+                    created++;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { created, updated, total = entries.Count, skipped });
         }
 
         [HttpPost("FetchFromMachine")]
@@ -463,6 +558,7 @@ namespace SchoolApiService.Controllers
                     return new ZktecoAttendanceRowVm
                     {
                         SrNo = idx + 1,
+                        StaffId = staffFound ? staffId : (int?)null,
                         EmployeeId = staffFound ? $"EMP-AFT-{staffId:0000}" : x.EnrollNumber,
                         Name = staffFound ? (staffName ?? string.Empty) : $"Unknown ({x.EnrollNumber})",
                         Attendance = string.Empty,
@@ -470,6 +566,8 @@ namespace SchoolApiService.Controllers
                         Date = x.InTime.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
                         InTime = inTime,
                         OutTime = outTime,
+                        InTimeRaw = x.InTime,
+                        OutTimeRaw = x.OutTime,
                         Remarks = staffFound ? string.Empty : "No staff mapping found for this enroll number."
                     };
                 })

@@ -21,7 +21,8 @@ namespace SchoolApp.Models.DataModels
         [Required]
         public int AttendanceIdentificationNumber { get; set; } = 111;
         public string? Description { get; set; }
-        public bool IsPresent { get; set; } = true;          
+        public bool IsPresent { get; set; } = true;
+        public DateTime? CheckInTime { get; set; }
         public DateTime? CheckOutTime { get; set; }
     }
 

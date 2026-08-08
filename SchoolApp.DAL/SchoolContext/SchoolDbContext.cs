@@ -64,6 +64,9 @@ namespace SchoolApp.DAL.SchoolContext
         public DbSet<Campus> Campuses { get; set; }
         public DbSet<Parent> Parents { get; set; }
         public DbSet<StudentFee> StudentFees { get; set; }
+        public DbSet<Shift> Shifts { get; set; }
+        public DbSet<PayrollDeductionRule> PayrollDeductionRules { get; set; }
+        public DbSet<Holiday> Holidays { get; set; }
 
         #endregion
 
@@ -174,6 +177,12 @@ namespace SchoolApp.DAL.SchoolContext
                 .HasOne(s => s.Staff)
                 .WithMany()
                 .HasForeignKey(s => s.StaffId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Staff>()
+                .HasOne(s => s.Shift)
+                .WithMany(sh => sh.Staffs)
+                .HasForeignKey(s => s.ShiftId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<StudentMarksDetails>()

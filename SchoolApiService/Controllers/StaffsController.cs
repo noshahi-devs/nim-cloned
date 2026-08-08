@@ -38,12 +38,22 @@ namespace SchoolApiService.Controllers
             public int? DepartmentId { get; set; }
             public DepartmentDto? Department { get; set; }
             public decimal? BasicSalary { get; set; }
+            public int? ShiftId { get; set; }
+            public ShiftDto? Shift { get; set; }
         }
 
         public class DepartmentDto
         {
             public int DepartmentId { get; set; }
             public string? DepartmentName { get; set; }
+        }
+
+        public class ShiftDto
+        {
+            public int ShiftId { get; set; }
+            public string? ShiftName { get; set; }
+            public TimeSpan StartTime { get; set; }
+            public TimeSpan? EndTime { get; set; }
         }
 
         public class StaffStatsDto
@@ -108,7 +118,15 @@ namespace SchoolApiService.Controllers
                             DepartmentId = s.Department.DepartmentId,
                             DepartmentName = s.Department.DepartmentName
                         } : null,
-                        BasicSalary = s.BasicSalary
+                        BasicSalary = s.BasicSalary,
+                        ShiftId = s.ShiftId,
+                        Shift = s.Shift != null ? new ShiftDto
+                        {
+                            ShiftId = s.Shift.ShiftId,
+                            ShiftName = s.Shift.ShiftName,
+                            StartTime = s.Shift.StartTime,
+                            EndTime = s.Shift.EndTime
+                        } : null
                     })
                     .ToListAsync();
 
@@ -154,6 +172,8 @@ namespace SchoolApiService.Controllers
                         s.BasicSalary,
                         s.DepartmentId,
                         Department = s.Department != null ? new { s.Department.DepartmentId, s.Department.DepartmentName } : null,
+                        s.ShiftId,
+                        Shift = s.Shift != null ? new { s.Shift.ShiftId, s.Shift.ShiftName, s.Shift.StartTime, s.Shift.EndTime, s.Shift.GraceMinutes } : null,
                         s.StaffSalaryId,
                         StaffSalary = s.StaffSalary != null ? new 
                         { 
@@ -224,6 +244,8 @@ namespace SchoolApiService.Controllers
                         s.BasicSalary,
                         s.DepartmentId,
                         Department = s.Department != null ? new { s.Department.DepartmentId, s.Department.DepartmentName } : null,
+                        s.ShiftId,
+                        Shift = s.Shift != null ? new { s.Shift.ShiftId, s.Shift.ShiftName, s.Shift.StartTime, s.Shift.EndTime, s.Shift.GraceMinutes } : null,
                         s.StaffSalaryId,
                         StaffSalary = s.StaffSalary != null ? new 
                         { 

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SchoolApp.DAL.SchoolContext;
 
@@ -11,9 +12,11 @@ using SchoolApp.DAL.SchoolContext;
 namespace SchoolApp.DAL.Migrations
 {
     [DbContext(typeof(SchoolDbContext))]
-    partial class SchoolDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260806123119_AddShiftEndTimeAndStaffShiftLink")]
+    partial class AddShiftEndTimeAndStaffShiftLink
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -581,9 +584,6 @@ namespace SchoolApp.DAL.Migrations
                     b.Property<int>("AttendanceIdentificationNumber")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("CheckInTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime?>("CheckOutTime")
                         .HasColumnType("datetime2");
 
@@ -694,7 +694,7 @@ namespace SchoolApp.DAL.Migrations
                             CampusId = 1,
                             CampusCode = "MAIN",
                             CampusName = "Main Campus",
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(7396),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(4264),
                             IsActive = true
                         });
                 });
@@ -1352,26 +1352,6 @@ namespace SchoolApp.DAL.Migrations
                     b.ToTable("GradeScales");
                 });
 
-            modelBuilder.Entity("SchoolApp.Models.DataModels.Holiday", b =>
-                {
-                    b.Property<int>("HolidayId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HolidayId"));
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("HolidayId");
-
-                    b.ToTable("Holiday");
-                });
-
             modelBuilder.Entity("SchoolApp.Models.DataModels.Leave", b =>
                 {
                     b.Property<int>("LeaveId")
@@ -1509,7 +1489,7 @@ namespace SchoolApp.DAL.Migrations
                             MarkId = 1,
                             Feedback = "Good job!",
                             Grade = 1,
-                            MarkEntryDate = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9612),
+                            MarkEntryDate = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9126),
                             ObtainedScore = 65,
                             PassMarks = 40,
                             PassStatus = 0,
@@ -1523,7 +1503,7 @@ namespace SchoolApp.DAL.Migrations
                             MarkId = 2,
                             Feedback = "Excellent work!",
                             Grade = 0,
-                            MarkEntryDate = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9617),
+                            MarkEntryDate = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9133),
                             ObtainedScore = 75,
                             PassMarks = 40,
                             PassStatus = 0,
@@ -1537,7 +1517,7 @@ namespace SchoolApp.DAL.Migrations
                             MarkId = 3,
                             Feedback = "Excellent work!",
                             Grade = 0,
-                            MarkEntryDate = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9620),
+                            MarkEntryDate = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9138),
                             ObtainedScore = 75,
                             PassMarks = 40,
                             PassStatus = 0,
@@ -1984,34 +1964,6 @@ namespace SchoolApp.DAL.Migrations
                     b.HasIndex("MonthlyPaymentId");
 
                     b.ToTable("PaymentMonth");
-                });
-
-            modelBuilder.Entity("SchoolApp.Models.DataModels.PayrollDeductionRule", b =>
-                {
-                    b.Property<int>("PayrollDeductionRuleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PayrollDeductionRuleId"));
-
-                    b.Property<int>("DeductionDayBasis")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsAbsentEqualToLeave")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("LeavesAllowed")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("PayrollDeductionRuleId");
-
-                    b.ToTable("PayrollDeductionRule");
                 });
 
             modelBuilder.Entity("SchoolApp.Models.DataModels.SalaryPaymentDetail", b =>
@@ -2513,7 +2465,7 @@ namespace SchoolApp.DAL.Migrations
                             FestivalBonus = 1000m,
                             HousingAllowance = 800m,
                             MedicalAllowance = 300m,
-                            PaymentDate = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9663),
+                            PaymentDate = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9200),
                             SavingFund = 200m,
                             StaffName = "Jamir King",
                             Taxes = 500m,
@@ -2529,7 +2481,7 @@ namespace SchoolApp.DAL.Migrations
                             FestivalBonus = 1000m,
                             HousingAllowance = 800m,
                             MedicalAllowance = 300m,
-                            PaymentDate = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9679),
+                            PaymentDate = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9226),
                             SavingFund = 200m,
                             StaffName = "Jamir Jamidar",
                             Taxes = 500m,
@@ -2545,7 +2497,7 @@ namespace SchoolApp.DAL.Migrations
                             FestivalBonus = 1000m,
                             HousingAllowance = 800m,
                             MedicalAllowance = 300m,
-                            PaymentDate = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9687),
+                            PaymentDate = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9238),
                             SavingFund = 200m,
                             StaffName = "Jamir Amir",
                             Taxes = 500m,
@@ -2583,61 +2535,61 @@ namespace SchoolApp.DAL.Migrations
                         new
                         {
                             StandardId = 1,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9760),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9336),
                             StandardName = "Class One"
                         },
                         new
                         {
                             StandardId = 2,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9763),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9344),
                             StandardName = "Class Two"
                         },
                         new
                         {
                             StandardId = 3,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9765),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9359),
                             StandardName = "Class Three"
                         },
                         new
                         {
                             StandardId = 4,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9768),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9362),
                             StandardName = "Class Four"
                         },
                         new
                         {
                             StandardId = 5,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9770),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9365),
                             StandardName = "Class Five"
                         },
                         new
                         {
                             StandardId = 6,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9772),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9368),
                             StandardName = "Class Six"
                         },
                         new
                         {
                             StandardId = 7,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9774),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9372),
                             StandardName = "Class Seven"
                         },
                         new
                         {
                             StandardId = 8,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9776),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9375),
                             StandardName = "Class Eight"
                         },
                         new
                         {
                             StandardId = 9,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9778),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9379),
                             StandardName = "Class Nine"
                         },
                         new
                         {
                             StandardId = 10,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9779),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9382),
                             StandardName = "Class Ten"
                         });
                 });
@@ -2788,7 +2740,7 @@ namespace SchoolApp.DAL.Migrations
                         {
                             StudentId = 1,
                             AdmissionNo = 1000,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9825),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9461),
                             DefaultDiscount = 0m,
                             EnrollmentNo = 2000,
                             FatherContactNumber = "9876543210",
@@ -2816,7 +2768,7 @@ namespace SchoolApp.DAL.Migrations
                         {
                             StudentId = 2,
                             AdmissionNo = 1001,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9844),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9478),
                             DefaultDiscount = 0m,
                             EnrollmentNo = 2001,
                             FatherContactNumber = "9876543220",
@@ -2844,7 +2796,7 @@ namespace SchoolApp.DAL.Migrations
                         {
                             StudentId = 3,
                             AdmissionNo = 1002,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9850),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9487),
                             DefaultDiscount = 0m,
                             EnrollmentNo = 2002,
                             FatherContactNumber = "9876543221",
@@ -2872,7 +2824,7 @@ namespace SchoolApp.DAL.Migrations
                         {
                             StudentId = 4,
                             AdmissionNo = 1003,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9856),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9494),
                             DefaultDiscount = 0m,
                             EnrollmentNo = 2003,
                             FatherContactNumber = "9876543222",
@@ -2900,7 +2852,7 @@ namespace SchoolApp.DAL.Migrations
                         {
                             StudentId = 5,
                             AdmissionNo = 1004,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9861),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9502),
                             DefaultDiscount = 0m,
                             EnrollmentNo = 2004,
                             FatherContactNumber = "9876543223",
@@ -2928,7 +2880,7 @@ namespace SchoolApp.DAL.Migrations
                         {
                             StudentId = 6,
                             AdmissionNo = 1005,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9866),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9511),
                             DefaultDiscount = 0m,
                             EnrollmentNo = 2005,
                             FatherContactNumber = "9876543224",
@@ -2956,7 +2908,7 @@ namespace SchoolApp.DAL.Migrations
                         {
                             StudentId = 7,
                             AdmissionNo = 1006,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9870),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9518),
                             DefaultDiscount = 0m,
                             EnrollmentNo = 2006,
                             FatherContactNumber = "9876543225",
@@ -2984,7 +2936,7 @@ namespace SchoolApp.DAL.Migrations
                         {
                             StudentId = 8,
                             AdmissionNo = 1007,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9875),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9526),
                             DefaultDiscount = 0m,
                             EnrollmentNo = 2007,
                             FatherContactNumber = "9876543226",
@@ -3012,7 +2964,7 @@ namespace SchoolApp.DAL.Migrations
                         {
                             StudentId = 9,
                             AdmissionNo = 1008,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9880),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9533),
                             DefaultDiscount = 0m,
                             EnrollmentNo = 2008,
                             FatherContactNumber = "9876543227",
@@ -3040,7 +2992,7 @@ namespace SchoolApp.DAL.Migrations
                         {
                             StudentId = 10,
                             AdmissionNo = 1009,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9898),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9556),
                             DefaultDiscount = 0m,
                             EnrollmentNo = 2009,
                             FatherContactNumber = "9876543228",
@@ -3068,7 +3020,7 @@ namespace SchoolApp.DAL.Migrations
                         {
                             StudentId = 11,
                             AdmissionNo = 1010,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9925),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9608),
                             DefaultDiscount = 0m,
                             EnrollmentNo = 2010,
                             FatherContactNumber = "9876543229",
@@ -3096,7 +3048,7 @@ namespace SchoolApp.DAL.Migrations
                         {
                             StudentId = 12,
                             AdmissionNo = 1011,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9929),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9618),
                             DefaultDiscount = 0m,
                             EnrollmentNo = 2011,
                             FatherContactNumber = "9876543230",
@@ -3124,7 +3076,7 @@ namespace SchoolApp.DAL.Migrations
                         {
                             StudentId = 13,
                             AdmissionNo = 1012,
-                            CreatedAt = new DateTime(2026, 8, 7, 13, 16, 19, 915, DateTimeKind.Local).AddTicks(9943),
+                            CreatedAt = new DateTime(2026, 8, 6, 17, 31, 16, 398, DateTimeKind.Local).AddTicks(9625),
                             DefaultDiscount = 0m,
                             EnrollmentNo = 2012,
                             FatherContactNumber = "9876543231",

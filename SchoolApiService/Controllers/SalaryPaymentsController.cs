@@ -146,6 +146,27 @@ namespace SchoolApiService.Controllers
                 return BadRequest("Invalid StaffId");
             }
 
+            var paymentDate = dto.PaymentDate ?? DateTime.Now;
+            var duplicate = await _context.dbsStaffSalary
+                .AsNoTracking()
+                .Where(p => p.StaffId == dto.StaffId
+                            && p.PaymentMonth == dto.PaymentMonth
+                            && p.PaymentDate != null
+                            && p.PaymentDate.Value.Year == paymentDate.Year)
+                .Select(p => new { p.StaffSalaryId, p.PaymentDate, p.NetSalary })
+                .FirstOrDefaultAsync();
+
+            if (duplicate != null)
+            {
+                return Conflict(new
+                {
+                    message = $"A salary record for {staff.StaffName} for {dto.PaymentMonth} {paymentDate.Year} already exists " +
+                               $"(#{duplicate.StaffSalaryId}, net PKR {duplicate.NetSalary:N0}, saved {duplicate.PaymentDate:d}). " +
+                               "Delete or edit that record instead of creating a duplicate.",
+                    existingId = duplicate.StaffSalaryId
+                });
+            }
+
             var additions = dto.Additions ?? new List<SalaryEntryDto>();
             var deductions = dto.Deductions ?? new List<SalaryEntryDto>();
 
@@ -157,7 +178,7 @@ namespace SchoolApiService.Controllers
             {
                 StaffId = dto.StaffId,
                 StaffName = staff.StaffName,
-                PaymentDate = dto.PaymentDate ?? DateTime.Now,
+                PaymentDate = paymentDate,
                 PaymentMonth = dto.PaymentMonth,
                 BasicSalary = dto.BasicSalary,
                 TotalAdditions = totalAdditions,

@@ -48,6 +48,9 @@ namespace SchoolApp.Models.DataModels
         public string? Status { get; set; }
         public int? DepartmentId { get; set; }
         public  Department? Department { get; set; }
+        public int? ShiftId { get; set; }
+        [ForeignKey("ShiftId")]
+        public Shift? Shift { get; set; }
         public decimal? BasicSalary { get; set; }
         public int? StaffSalaryId { get; set; }
         [ForeignKey("StaffSalaryId")]
